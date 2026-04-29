@@ -131,6 +131,41 @@ onBeforeMount(() => {
 </script>
 `;
 
+// A node marked with eslint-vue-setup-order:keep is pinned at its original position.
+// When the non-pinned nodes are already correctly ordered around it, the file is valid.
+const pinnedValidCode = `
+<script setup>
+// eslint-vue-setup-order:keep
+const count = ref(0);
+
+const emits = defineEmits();
+
+const hello = "Hello World!";
+</script>
+`;
+
+// The pinned node stays at index 0; the remaining non-pinned nodes (hello, emits) are
+// out of section order and must be sorted into the free positions around it.
+const pinnedInvalidCode = `
+<script setup>
+// eslint-vue-setup-order:keep
+const count = ref(0);
+const hello = "Hello World!";
+const emits = defineEmits();
+</script>
+`;
+
+const pinnedFixedCode = `
+<script setup>
+// eslint-vue-setup-order:keep
+const count = ref(0);
+
+const emits = defineEmits();
+
+const hello = "Hello World!";
+</script>
+`;
+
 ruleTester.run("declaration-order", rule, {
   valid: [
     {
@@ -158,6 +193,9 @@ ruleTester.run("declaration-order", rule, {
           },
         },
       ],
+    },
+    {
+      code: pinnedValidCode,
     },
   ],
   invalid: [
@@ -202,6 +240,15 @@ ruleTester.run("declaration-order", rule, {
         {
           message:
            ERROR_MESSAGE,
+        },
+      ],
+    },
+    {
+      code: pinnedInvalidCode,
+      output: pinnedFixedCode,
+      errors: [
+        {
+          message: ERROR_MESSAGE,
         },
       ],
     },
