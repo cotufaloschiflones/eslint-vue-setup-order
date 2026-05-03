@@ -131,6 +131,34 @@ onBeforeMount(() => {
 </script>
 `;
 
+const composableAliasesValidCode = `
+<script setup>
+const emits = defineEmits();
+
+const count = ref(0);
+
+const store = storeToRefs();
+</script>
+`;
+
+const composableAliasesInvalidCode = `
+<script setup>
+const store = storeToRefs();
+const count = ref(0);
+const emits = defineEmits();
+</script>
+`;
+
+const composableAliasesFixedCode = `
+<script setup>
+const emits = defineEmits();
+
+const count = ref(0);
+
+const store = storeToRefs();
+</script>
+`;
+
 ruleTester.run("declaration-order", rule, {
   valid: [
     {
@@ -156,6 +184,14 @@ ruleTester.run("declaration-order", rule, {
             onMounted: 0,
             onBeforeMount: 1,
           },
+        },
+      ],
+    },
+    {
+      code: composableAliasesValidCode,
+      options: [
+        {
+          composableAliases: ["storeToRefs"],
         },
       ],
     },
@@ -202,6 +238,20 @@ ruleTester.run("declaration-order", rule, {
         {
           message:
            ERROR_MESSAGE,
+        },
+      ],
+    },
+    {
+      code: composableAliasesInvalidCode,
+      output: composableAliasesFixedCode,
+      options: [
+        {
+          composableAliases: ["storeToRefs"],
+        },
+      ],
+      errors: [
+        {
+          message: ERROR_MESSAGE,
         },
       ],
     },
