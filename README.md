@@ -233,6 +233,63 @@ In this case:
 
 <br/>
 
+## 🛠 composableAliases Option
+By default, the rule treats function calls whose names start with `use` as composables. <br/>
+However, some utilities such as `storeToRefs` or `mapState` are composable in nature even though they do not follow the `use*` naming convention. <br/>
+You can classify those functions as composables by using the `composableAliases` option in `eslint.config.js`.
+
+### 📌 How It Works
+If a function name is included in `composableAliases`, declarations initialized from that call will be sorted in the `composables` section.
+
+Example:
+```js
+const store = storeToRefs();
+const state = mapState();
+```
+
+With the following configuration, both declarations above are treated as `composables`.
+
+### 📌 Configuration Example
+```js
+// eslint.config.js
+export default [
+  {
+    files: ["**/*.vue"],
+    languageOptions: {
+      parser: vueEslintParser,
+      parserOptions: {
+        parser: typescriptEslintParser,
+        ecmaVersion: 2022,
+        sourceType: "module",
+      },
+    },
+    plugins: {
+      "vue3-script-setup": {
+        rules: {
+          "declaration-order": eslintVueSetupOrderRule,
+        },
+      },
+    },
+    rules: {
+      "vue3-script-setup/declaration-order": [
+        "error",
+        {
+          composableAliases: ["storeToRefs", "mapState"], // this!!
+        },
+      ],
+    },
+  },
+];
+```
+
+### 📌 Result
+In this case:
+- `storeToRefs` will be treated as a composable.
+- `mapState` will be treated as a composable.
+- They will be sorted in the `composables` section even though their names do not start with `use`.
+
+<br/>
+
 ## 🛠 How to Apply
 ### 📌 Method 1: Install via npm
 ```
