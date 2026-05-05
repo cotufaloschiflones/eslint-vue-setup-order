@@ -166,6 +166,34 @@ const hello = "Hello World!";
 </script>
 `;
 
+const composableAliasesValidCode = `
+<script setup>
+const emits = defineEmits();
+
+const count = ref(0);
+
+const store = storeToRefs();
+</script>
+`;
+
+const composableAliasesInvalidCode = `
+<script setup>
+const store = storeToRefs();
+const count = ref(0);
+const emits = defineEmits();
+</script>
+`;
+
+const composableAliasesFixedCode = `
+<script setup>
+const emits = defineEmits();
+
+const count = ref(0);
+
+const store = storeToRefs();
+</script>
+`;
+
 ruleTester.run("declaration-order", rule, {
   valid: [
     {
@@ -196,6 +224,14 @@ ruleTester.run("declaration-order", rule, {
     },
     {
       code: pinnedValidCode,
+    },
+    {
+      code: composableAliasesValidCode,
+      options: [
+        {
+          composableAliases: ["storeToRefs"],
+        },
+      ],
     },
   ],
   invalid: [
@@ -246,6 +282,20 @@ ruleTester.run("declaration-order", rule, {
     {
       code: pinnedInvalidCode,
       output: pinnedFixedCode,
+      errors: [
+        {
+          message: ERROR_MESSAGE,
+        },
+      ],
+    },
+    {
+      code: composableAliasesInvalidCode,
+      output: composableAliasesFixedCode,
+      options: [
+        {
+          composableAliases: ["storeToRefs"],
+        },
+      ],
       errors: [
         {
           message: ERROR_MESSAGE,
