@@ -290,6 +290,64 @@ In this case:
 
 <br/>
 
+## 🛠 spaceBetweenItems Option
+By default, declarations within the same section are placed consecutively with no blank line between them. <br/>
+You can enable the `spaceBetweenItems` option to insert a blank line between every declaration inside a section, improving readability.
+
+### 📌 How It Works
+When `spaceBetweenItems` is set to `true`, each individual declaration within a section is separated by a blank line.
+Blank lines between different sections are always present regardless of this option.
+
+### 📌 Configuration Example
+```js
+// eslint.config.js
+export default [
+  {
+    files: ["**/*.vue"],
+    languageOptions: {
+      parser: vueEslintParser,
+      parserOptions: {
+        parser: typescriptEslintParser,
+        ecmaVersion: 2022,
+        sourceType: "module",
+      },
+    },
+    plugins: {
+      "vue3-script-setup": {
+        rules: {
+          "declaration-order": eslintVueSetupOrderRule,
+        },
+      },
+    },
+    rules: {
+      "vue3-script-setup/declaration-order": [
+        "error",
+        {
+          spaceBetweenItems: true, // <= like this
+        },
+      ],
+    },
+  },
+];
+```
+
+### 📌 Result
+
+Without `spaceBetweenItems` (default):
+```js
+const count = ref(0);
+const msg = ref("");
+```
+
+With `spaceBetweenItems: true`:
+```js
+const count = ref(0);
+
+const msg = ref("");
+```
+
+<br/>
+
 ## 🛠 How to Apply
 ### 📌 Method 1: Install via npm
 ```
