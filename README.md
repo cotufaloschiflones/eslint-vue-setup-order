@@ -235,13 +235,16 @@ In this case:
 
 ## 🛠 Pinning a Declaration in Place
 
-You can prevent the rule from moving a specific declaration by adding a `// eslint-vue-setup-order:keep` comment on the line immediately before it.
+You can prevent the rule from moving a specific declaration by adding a `// eslint-vue-setup-order:keep` comment **directly before** or **inline at the end of** the declaration line.
 
 ### 📌 How It Works
 When the rule encounters a node with this marker it is treated as **pinned**: it stays at its original position in the source, and the remaining (non-pinned) declarations are sorted into the free slots around it.
 
-### 📌 Example
+The comment must be **directly adjacent** to the declaration (no blank lines in between). If there is a blank line between the comment and the declaration, the comment will not pin the declaration.
 
+### 📌 Examples
+
+#### Leading comment (on the line before):
 ```vue
 <script setup>
 // eslint-vue-setup-order:keep
@@ -253,9 +256,30 @@ const hello = "Hello World!";
 </script>
 ```
 
-Here `count` (a `reactiveVars` declaration) would normally be moved after `defineEmits` and `plainVars` declarations. Because it is pinned, it stays at the top while `emits` and `hello` are sorted into the remaining positions.
+#### Inline comment (at the end of the line):
+```vue
+<script setup>
+const emits = defineEmits();
 
-> **Note:** The `// eslint-vue-setup-order:keep` comment must appear on the line **directly** before the declaration it pins. The comment itself is preserved as-is when the rule applies its auto-fix.
+const count = ref(0); // eslint-vue-setup-order:keep
+
+const hello = "Hello World!";
+</script>
+```
+
+#### Pinned in the middle:
+```vue
+<script setup>
+const hello = "Hello World!";
+// eslint-vue-setup-order:keep
+const count = ref(0);
+const emits = defineEmits();
+</script>
+```
+
+In all these examples, `count` (a `reactiveVars` declaration) stays in its original position while the other declarations are sorted into the remaining free slots around it.
+
+> **Note:** The `// eslint-vue-setup-order:keep` comment must be **directly adjacent** to the declaration it pins (either on the line immediately before or at the end of the same line). A blank line between the comment and the declaration breaks the adjacency and prevents pinning. The comment itself is preserved as-is when the rule applies its auto-fix.
 
 ## 🛠 composableAliases Option
 By default, the rule treats function calls whose names start with `use` as composables. <br/>
