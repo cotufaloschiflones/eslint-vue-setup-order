@@ -267,6 +267,104 @@ const hello = "Hello World!";
 </script>
 `;
 
+const spaceBetweenItemsValidCode = `
+<script setup>
+const emits = defineEmits();
+
+const hello = "Hello World!";
+
+const count = ref(0);
+
+const msg = ref("");
+
+const changeMsg = () => {};
+
+function handleClick() {
+  emits("click");
+}
+</script>
+`;
+
+const spaceBetweenItemsInvalidCode = `
+<script setup>
+const hello = "Hello World!";
+const changeMsg = () => {};
+const emits = defineEmits();
+const count = ref(0);
+const msg = ref("");
+function handleClick() {
+  emits("click");
+}
+</script>
+`;
+
+const spaceBetweenItemsFixedCode = `
+<script setup>
+const emits = defineEmits();
+
+const hello = "Hello World!";
+
+const count = ref(0);
+
+const msg = ref("");
+
+const changeMsg = () => {};
+
+function handleClick() {
+  emits("click");
+}
+</script>
+`;
+
+const functionBodySpacingValidCode = `
+<script setup>
+const emits = defineEmits();
+
+function handleClick() {
+  if (true) {
+
+    emits("click");
+  }
+}
+</script>
+`;
+
+const functionBodySpacingInvalidCode = `
+<script setup>
+function handleClick() {
+  if (true) {
+
+    emits("click");
+  }
+}
+
+const emits = defineEmits();
+</script>
+`;
+
+const functionBodySpacingFixedCode = `
+<script setup>
+const emits = defineEmits();
+
+function handleClick() {
+  if (true) {
+
+    emits("click");
+  }
+}
+</script>
+`;
+
+const multilineComposableSpacingValidCode = `
+<script setup>
+const state = useFeature({
+  top: true,
+
+  bottom: false,
+});
+</script>
+`;
+
 ruleTester.run("declaration-order", rule, {
   valid: [
     {
@@ -308,6 +406,20 @@ ruleTester.run("declaration-order", rule, {
           composableAliases: ["storeToRefs"],
         },
       ],
+    },
+    {
+      code: spaceBetweenItemsValidCode,
+      options: [
+        {
+          spaceBetweenItems: true,
+        },
+      ],
+    },
+    {
+      code: functionBodySpacingValidCode,
+    },
+    {
+      code: multilineComposableSpacingValidCode,
     },
   ],
   invalid: [
@@ -399,6 +511,29 @@ ruleTester.run("declaration-order", rule, {
     {
       code: inlinePinnedInvalidCode,
       output: inlinePinnedFixedCode,
+      errors: [
+        {
+          message: ERROR_MESSAGE,
+        },
+      ],
+    },
+    {
+      code: spaceBetweenItemsInvalidCode,
+      output: spaceBetweenItemsFixedCode,
+      options: [
+        {
+          spaceBetweenItems: true,
+        },
+      ],
+      errors: [
+        {
+          message: ERROR_MESSAGE,
+        },
+      ],
+    },
+    {
+      code: functionBodySpacingInvalidCode,
+      output: functionBodySpacingFixedCode,
       errors: [
         {
           message: ERROR_MESSAGE,
