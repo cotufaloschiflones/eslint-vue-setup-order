@@ -159,6 +159,55 @@ const store = storeToRefs();
 </script>
 `;
 
+const spaceBetweenItemsValidCode = `
+<script setup>
+const emits = defineEmits();
+
+const hello = "Hello World!";
+
+const count = ref(0);
+
+const msg = ref("");
+
+const changeMsg = () => {};
+
+function handleClick() {
+  emits("click");
+}
+</script>
+`;
+
+const spaceBetweenItemsInvalidCode = `
+<script setup>
+const hello = "Hello World!";
+const changeMsg = () => {};
+const emits = defineEmits();
+const count = ref(0);
+const msg = ref("");
+function handleClick() {
+  emits("click");
+}
+</script>
+`;
+
+const spaceBetweenItemsFixedCode = `
+<script setup>
+const emits = defineEmits();
+
+const hello = "Hello World!";
+
+const count = ref(0);
+
+const msg = ref("");
+
+const changeMsg = () => {};
+
+function handleClick() {
+  emits("click");
+}
+</script>
+`;
+
 ruleTester.run("declaration-order", rule, {
   valid: [
     {
@@ -192,6 +241,14 @@ ruleTester.run("declaration-order", rule, {
       options: [
         {
           composableAliases: ["storeToRefs"],
+        },
+      ],
+    },
+    {
+      code: spaceBetweenItemsValidCode,
+      options: [
+        {
+          spaceBetweenItems: true,
         },
       ],
     },
@@ -247,6 +304,20 @@ ruleTester.run("declaration-order", rule, {
       options: [
         {
           composableAliases: ["storeToRefs"],
+        },
+      ],
+      errors: [
+        {
+          message: ERROR_MESSAGE,
+        },
+      ],
+    },
+    {
+      code: spaceBetweenItemsInvalidCode,
+      output: spaceBetweenItemsFixedCode,
+      options: [
+        {
+          spaceBetweenItems: true,
         },
       ],
       errors: [
